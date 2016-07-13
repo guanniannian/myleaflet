@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet Quick Start Guide Example</title>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+</head>
+<body>
+    <div id="mapid" style="width: 1340px; height: 615px"></div>
+    <textarea id="myTextArea" rows="10" cols="60">
+    </textarea>
+
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script>
+
+        var mymap = L.map('mapid').setView([39.9, 116.3], 9);
+        var per_point;                     //记录上一个节点坐标
+        var i=1
+        mymap.doubleClickZoom.disable();   //禁止双击放大功能
+        //添加缩放
+        // var zoomControl = L.control.zoom({
+
+        //            position: 'topleft'
+
+        //  });
+
+        // mymap.addControl(zoomControl);
+
+        //添加比例尺
+        L.control.scale({
+            position: 'topright'
+        }).addTo(mymap); 
+
+        //添加底图
+        L.tileLayer('http://map.zhtu.net:8080/r3t-basemap/{z}/{x}/{y}/tile.jpg', {
+            maxZoom: 18,
+        }).addTo(mymap);
+
+        mymap.on('dblclick',addPoint);             //双击地图
+
+        //双击事件函数
+        function addPoint(e){
+            
+            var marker = L.marker([e.latlng.lat, e.latlng.lng])
+            .addTo(mymap)
+            .bindPopup("经度："+e.latlng.lng+"<br>纬度："+e.latlng.lat)
+            .openPopup();
+
+            //文本框中添加该点的经纬度
+            document.getElementById("myTextArea").value+=i+" 经度："+e.latlng.lng+" 纬度："+e.latlng.lat+"\r    ";
+
+            //连接线段
+            if(i!=1){
+                var polyline = new L.polyline([
+                    [per_point.latlng.lat, per_point.latlng.lng],
+                    [e.latlng.lat, e.latlng.lng]], {
+                            color: 'blue',
+                    opacity: 0.5,
+                    weight: 3
+                }).addTo(mymap);
+            }
+            per_point=e;
+            i++;
+        }   
+
+    </script>
+</body>
+</html>
